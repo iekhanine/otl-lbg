@@ -109,3 +109,201 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* LBG photo previews */
+.photoPreviewGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:10px;width:100%}
+.photoPreview{position:relative;aspect-ratio:1;overflow:hidden;border-radius:10px;background:#eee}
+.photoPreview img{display:block;width:100%;height:100%;object-fit:cover}
+.photoRemove{position:absolute;top:6px;right:6px;width:28px;height:28px;padding:0;border:0;border-radius:50%;background:rgba(15,27,38,.88);color:#fff;font-size:20px;line-height:28px;cursor:pointer}
+.photoAdd{aspect-ratio:1;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:2px dashed #9ca3a8;border-radius:10px;cursor:pointer;background:#faf8f2;font-size:26px}
+.photoAdd small{font-size:11px;font-weight:600}
+.photoAdd input{display:none}
+.messagePhotos{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.messagePhotos a{display:block;width:160px;height:160px;max-width:100%;overflow:hidden;border-radius:10px;background:#eee}
+.messagePhotos img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:600px){.messagePhotos a{width:120px;height:120px}}
+
+/* Force compact inbox attachment previews and live unread badge */
+.adminConversation .messagePhotos{display:flex!important;flex-wrap:wrap!important;gap:10px!important;align-items:flex-start!important}
+.adminConversation .messagePhotos a{display:block!important;width:160px!important;height:160px!important;max-width:160px!important;max-height:160px!important;overflow:hidden!important;border-radius:10px!important}
+.adminConversation .messagePhotos a img{display:block!important;width:160px!important;height:160px!important;max-width:160px!important;max-height:160px!important;object-fit:cover!important}
+.adminNav nav a .navBadge{margin-left:auto;min-width:22px;height:22px;padding:0 6px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;font-weight:700;background:#b9443d;color:#fff}
+@media(max-width:600px){.adminConversation .messagePhotos a,.adminConversation .messagePhotos a img{width:120px!important;height:120px!important;max-width:120px!important;max-height:120px!important}}
+
+/* Conversation inbox */
+.threadList button.unread{font-weight:700}
+.threadList .newPill{margin-left:auto;white-space:nowrap;background:#b9443d;color:#fff;border-radius:999px;padding:3px 7px;font-size:10px}
+.threadList .followMini{font-size:10px!important;margin-top:3px;opacity:.75}
+.followUpBar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.1)}
+.followUpBar input{padding:7px 8px;border:1px solid #b9bec2;border-radius:6px;background:#fff}
+.messageBlock{margin-bottom:14px}
+.messageBlock .messagePhotos{margin:7px 0 0}
+
+/* Follow-up reminder panel */
+.followUpBar{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  flex-wrap:wrap!important;
+  margin:12px 14px!important;
+  padding:12px 14px!important;
+  border:1px solid rgba(25,42,56,.16)!important;
+  border-radius:10px!important;
+  background:#f7f4ec!important;
+  box-shadow:0 1px 2px rgba(15,27,38,.04)!important;
+}
+.followUpTitle{
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-width:175px!important;
+}
+.followUpTitle svg{
+  width:18px!important;
+  height:18px!important;
+  flex:0 0 auto!important;
+  color:#263b4c!important;
+}
+.followUpTitle div{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:1px!important;
+}
+.followUpTitle b{
+  color:#172936!important;
+  font-size:13px!important;
+  line-height:1.2!important;
+}
+.followUpTitle span{
+  color:#6b747b!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+}
+.followUpControls{
+  display:flex!important;
+  align-items:flex-end!important;
+  gap:7px!important;
+  flex-wrap:wrap!important;
+}
+.followUpControls label{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:3px!important;
+  margin:0!important;
+  color:#59636a!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  letter-spacing:.05em!important;
+  text-transform:uppercase!important;
+}
+.followUpControls input[type="date"],
+.followUpControls input[type="time"]{
+  box-sizing:border-box!important;
+  height:34px!important;
+  margin:0!important;
+  padding:0 9px!important;
+  border:1px solid #b8bec1!important;
+  border-radius:6px!important;
+  outline:none!important;
+  background:#fff!important;
+  color:#172936!important;
+  font:600 12px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+  box-shadow:none!important;
+}
+.followUpControls input[type="date"]{width:145px!important}
+.followUpControls input[type="time"]{width:105px!important}
+.followUpControls input:focus{
+  border-color:#466b83!important;
+  box-shadow:0 0 0 2px rgba(70,107,131,.12)!important;
+}
+.followSet,.followClear{
+  height:34px!important;
+  padding:0 12px!important;
+  border-radius:6px!important;
+  font-size:11px!important;
+  font-weight:700!important;
+  cursor:pointer!important;
+  white-space:nowrap!important;
+}
+.followSet{
+  border:1px solid #263b4c!important;
+  background:#263b4c!important;
+  color:#fff!important;
+}
+.followSet:hover{background:#172936!important}
+.followSet:disabled{
+  opacity:.4!important;
+  cursor:not-allowed!important;
+}
+.followClear{
+  border:1px solid #b8bec1!important;
+  background:#fff!important;
+  color:#59636a!important;
+}
+.followClear:hover{
+  border-color:#9f3f39!important;
+  color:#9f3f39!important;
+}
+@media(max-width:760px){
+  .followUpBar{
+    align-items:stretch!important;
+    margin:10px!important;
+    padding:11px!important;
+  }
+  .followUpControls{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    width:100%!important;
+  }
+  .followUpControls input[type="date"],
+  .followUpControls input[type="time"]{
+    width:100%!important;
+  }
+  .followSet,.followClear{width:100%!important}
+}
+
+/* Inbox follow-up control - isolated from generic form styles */
+.adminConversation .inboxReminder{
+  box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:space-between!important;
+  gap:16px!important;margin:12px 14px!important;padding:12px 14px!important;border:1px solid #d5d0c5!important;
+  border-radius:9px!important;background:#f6f3eb!important;color:#172936!important
+}
+.adminConversation .inboxReminderInfo{display:flex!important;align-items:center!important;gap:9px!important;min-width:190px!important}
+.adminConversation .inboxReminderInfo>svg{width:18px!important;height:18px!important;color:#3d5f75!important}
+.adminConversation .inboxReminderInfo>div{display:flex!important;flex-direction:column!important;gap:2px!important}
+.adminConversation .inboxReminderInfo strong{font-size:12px!important;line-height:14px!important}
+.adminConversation .inboxReminderInfo small{font-size:10px!important;line-height:12px!important;color:#6e767b!important}
+.adminConversation .inboxReminderFields{display:flex!important;align-items:flex-end!important;gap:7px!important;flex-wrap:wrap!important}
+.adminConversation .reminderField{display:flex!important;flex-direction:column!important;gap:3px!important}
+.adminConversation .reminderField>span{font-size:9px!important;line-height:10px!important;font-weight:800!important;text-transform:uppercase!important;letter-spacing:.06em!important;color:#6a7378!important}
+.adminConversation .reminderField>input{appearance:auto!important;box-sizing:border-box!important;height:34px!important;margin:0!important;padding:0 9px!important;border:1px solid #aeb6ba!important;border-radius:6px!important;background:#fff!important;color:#172936!important;font-size:12px!important;font-weight:600!important;line-height:32px!important;box-shadow:none!important}
+.adminConversation .reminderField:first-child>input{width:145px!important}
+.adminConversation .reminderField:nth-child(2)>input{width:105px!important}
+.adminConversation .reminderSet,.adminConversation .reminderClear{box-sizing:border-box!important;height:34px!important;margin:0!important;padding:0 12px!important;border-radius:6px!important;font-size:11px!important;font-weight:750!important;line-height:32px!important;cursor:pointer!important}
+.adminConversation .reminderSet{border:1px solid #263b4c!important;background:#263b4c!important;color:#fff!important}
+.adminConversation .reminderClear{border:1px solid #b9b5ac!important;background:#fff!important;color:#555f65!important}
+.adminConversation .reminderSet:disabled{opacity:.38!important;cursor:not-allowed!important}
+
+/* Admin create appointment modal */
+.modalShade{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,20,28,.48)}
+.adminApptModal{width:min(560px,100%);border:1px solid #c9c5bb;border-radius:12px;background:#fbfaf6;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden}
+.adminApptHead{display:flex;align-items:flex-start;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #dedad0}
+.adminApptHead h2{margin:0 0 3px;font-size:19px;color:#172936}.adminApptHead p{margin:0;font-size:11px;color:#6d757a}
+.adminApptHead>button{border:0;background:transparent;font-size:25px;line-height:22px;color:#59636a;cursor:pointer}
+.adminApptGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:18px}
+.adminApptGrid label{display:flex;flex-direction:column;gap:5px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#59636a}
+.adminApptGrid input,.adminApptGrid select,.adminApptGrid textarea{box-sizing:border-box;width:100%;min-height:38px;margin:0;padding:8px 10px;border:1px solid #b9bec1;border-radius:6px;background:#fff;color:#172936;font:500 12px system-ui,-apple-system,"Segoe UI",sans-serif}
+.adminApptGrid textarea{min-height:75px;resize:vertical}.adminApptGrid .wide{grid-column:1/-1}
+.adminApptActions{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid #dedad0;background:#f5f2ea}
+.adminApptActions button{height:35px;padding:0 14px;border-radius:6px;font-size:11px;font-weight:750;cursor:pointer}
+.adminApptActions .cancel{border:1px solid #b9bec1;background:#fff;color:#59636a}
+.adminApptActions .save{border:1px solid #a83f39;background:#a83f39;color:#fff}
+.createAppt{cursor:pointer}
+@media(max-width:700px){
+ .adminConversation .inboxReminder{align-items:stretch!important;flex-direction:column!important}
+ .adminConversation .inboxReminderFields{display:grid!important;grid-template-columns:1fr 1fr!important}
+ .adminConversation .reminderField>input{width:100%!important}
+ .adminConversation .reminderSet,.adminConversation .reminderClear{width:100%!important}
+ .adminApptGrid{grid-template-columns:1fr}.adminApptGrid .wide{grid-column:auto}
+}
