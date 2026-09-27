@@ -1,69 +1,33 @@
-# Local Bike Guy V6
+# Local Bike Guy - V.11
 
-V6 fixes the API routing/runtime problem from V5.
+Unified operational workflow.
 
-## What changed
-- `/book` remains the clean Facebook share link: logo + booking form only.
-- Public bookings and messages submit through `/api/submit`.
-- Local `npm run dev` now executes the same `/api/*.ts` handlers through a Vite development middleware.
-- Vercel routing uses filesystem-first routing so `/api/*` is executed before the SPA fallback.
-- `/api/health` reports whether server configuration is present without exposing secrets.
-- Frontend API parsing now validates the response instead of blindly calling `response.json()`.
-- Admin continues to use real Supabase-backed appointments, messages, customers and settings.
-- Notification email and notification on/off switch remain editable in Admin > Settings.
+- Inbox is now the intake queue for customer communication and appointment requests.
+- One conversation per normalized customer email.
+- Actual appointment records render chronologically inside the customer Inbox thread.
+- Requested appointments have direct Approve and Cancel actions in Inbox.
+- Appointment detail has direct Approve and Cancel actions while status is Requested.
+- The status dropdown is reserved for approved/in-progress appointments.
+- Appointments main page is now the schedule for approved work, not a duplicate incoming-request queue.
+- Appointment detail links back to the customer's Inbox conversation.
+- Existing unified-thread scrolling, Socials workflow, two-way email work, and local loadEnv/Resend fix are retained.
 
-## Environment variables
-Create `.env.local` for local development:
+No new database migration is required for V.11.
 
-VITE_SUPABASE_URL=...
-VITE_SUPABASE_ANON_KEY=...
-SUPABASE_URL=...
-SUPABASE_SERVICE_ROLE_KEY=...
-RESEND_API_KEY=...
-NOTIFICATION_FROM_EMAIL=Local Bike Guy <notifications@your-verified-domain.com>
 
-The service-role key must NEVER use a `VITE_` prefix.
+## V.11.1 - Notification-only email workflow
+- Admin notification recipient remains controlled by Admin Settings.
+- Notification sender defaults to `Local Bike Guy <inquiry@onetimelabs.net>`.
+- New message and appointment notifications link directly to the matching Admin Inbox conversation.
+- Notification emails instruct the admin not to reply by email and use `no-reply@onetimelabs.net` as Reply-To.
+- Removed inbound email webhook handling and the unused legacy `/api/notify` endpoint.
+- Admin replies sent from LBG now stop on Resend errors instead of creating a false sent-message bubble.
+- Removed temporary Resend key fingerprint fields from `/api/health`.
 
-Add the same server variables in Vercel Project Settings > Environment Variables.
-
-## Database
-Run `supabase/V5_SERVER_ADMIN.sql` once if you have not already run it.
-Then whitelist the owner's Google email:
-
-```sql
-insert into public.admin_users(email)
-values ('OWNER-GOOGLE-EMAIL@example.com')
-on conflict do nothing;
-```
-
-Notifications default OFF so testing does not email the owner.
-
-## Run
-```powershell
-npm install
-npm run dev
-```
-
-Test API health in the browser:
-`/api/health`
-
-Expected shape:
-`{"ok":true,"service":"local-bike-guy-api",...}`
-
-Then test `/book`.
-
-## Build
-```powershell
-npm run build
-```
-
-## V8 update
-1. Run `supabase/V8_ADMIN_DATA.sql` in the Supabase SQL Editor.
-2. Notifications are seeded OFF by default.
-3. Admin Services & Pricing is database-backed and seeded by the V8 SQL file.
-4. Admin Settings now upserts the settings row, so the first save works even if no row existed previously.
-5. Appointments include Cancel and permanent Delete actions. Cancel preserves history; Delete removes the row.
-6. V8 seeds clearly marked demo appointments and inbox messages. Demo email addresses use `demo.invalid`.
-
-## V9 response normalization fix
-V9 normalizes Admin API responses in one place. It accepts both raw JSON arrays/objects and `{ "data": ... }` wrapped responses. No V9 SQL migration is required. Keep the V8 database rows already seeded.
+## V11.2 - Branded Email Replies
+- Branded HTML customer replies with Local Bike Guy logo.
+- Inbox Enter key opens a send-confirmation dialog; Shift+Enter adds a line break.
+- Customer reply template is editable in Admin > Settings with live preview.
+- New booking/message notification destination comes only from business_settings.notification_email.
+- Removed obsolete inbound-email and legacy notification endpoints.
+- Run supabase/005_email_template_settings.sql once before using the new Settings template fields.

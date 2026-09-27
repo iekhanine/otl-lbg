@@ -200,3 +200,182 @@
     flex-basis:68px!important;
   }
 }
+
+/* Social signup links */
+.socialStats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}.socialStats .panel{display:flex;flex-direction:column;padding:14px 16px}.socialStats span{font-size:9px;font-weight:800;letter-spacing:.08em;color:#788086}.socialStats b{margin-top:4px;font-size:24px;color:#172936}.socialTable{overflow:hidden;padding:0}.socialTableHead,.socialRow{display:grid;grid-template-columns:minmax(180px,1.5fr) .7fr .9fr .6fr 150px;gap:12px;align-items:center;padding:11px 14px}.socialTableHead{background:#f4f0e7;border-bottom:1px solid #ded9ce;color:#777f83;font-size:9px;font-weight:800;letter-spacing:.08em}.socialRow{border-bottom:1px solid #e7e3da;font-size:11px}.socialRow:last-child{border-bottom:0}.socialIdentity{display:flex;min-width:0;flex-direction:column}.socialIdentity b{color:#172936;font-size:12px}.socialIdentity span,.socialIdentity small{color:#6e777b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.socialIdentity small{margin-top:2px;color:#45677c}.socialState{justify-self:start;padding:4px 7px;border-radius:999px;font-size:9px;font-weight:800}.socialState.live{background:#e5efe8;color:#356345}.socialState.off{background:#eeeae4;color:#7b7771}.socialActions{display:flex;justify-content:flex-end;gap:5px}.socialActions button,.socialActions a{display:flex;height:30px;align-items:center;justify-content:center;gap:4px;padding:0 8px;border:1px solid #c8c6bf;border-radius:6px;background:#fff;color:#344d5d;font-size:10px;font-weight:700;text-decoration:none;cursor:pointer}.socialActions svg{width:13px;height:13px}.socialEmpty{display:flex;min-height:150px;align-items:center;justify-content:center;flex-direction:column;gap:5px;color:#747d81}.socialEmpty svg{width:24px}.socialEmpty b{color:#344650}.socialEditor{max-width:560px}.joinPage{display:flex;justify-content:center;padding:28px 16px 48px}.joinCard{width:min(100%,680px);border:1px solid #ddd8cd;border-radius:12px;background:#fff;box-shadow:0 12px 32px rgba(25,35,40,.08);overflow:hidden}.joinIntro{padding:24px 26px 18px;background:#f4f0e7;border-bottom:1px solid #ded9ce}.joinIntro .logo{width:58px;height:58px}.joinIntro>span{display:block;margin-top:10px;color:#7b7f7f;font-size:9px;font-weight:900;letter-spacing:.13em}.joinIntro h1{margin:5px 0 6px;color:#172936;font-size:25px}.joinIntro p{margin:0;color:#5d686e;font-size:12px}.joinIntro small{display:block;margin-top:8px;color:#7b8387}.joinForm{display:flex;flex-direction:column;gap:12px;padding:22px 26px}.joinForm h3{margin:5px 0 -3px;color:#172936;font-size:12px;text-transform:uppercase;letter-spacing:.06em}.joinForm label{display:flex;flex-direction:column;gap:5px;color:#45545c;font-size:10px;font-weight:800}.joinForm input,.joinForm select,.joinForm textarea{box-sizing:border-box;width:100%;padding:10px;border:1px solid #c9c8c2;border-radius:6px;background:#fff;color:#172936;font:inherit;font-size:12px}.joinForm textarea{min-height:85px;resize:vertical}.joinService{display:flex;align-items:center;justify-content:space-between;padding:11px 13px;border-radius:7px;background:#edf2f4}.joinService span{font-size:9px;font-weight:900;letter-spacing:.08em;color:#6d7a81}.joinService b{color:#263f50;font-size:12px}.joinError{padding:45px 28px;text-align:center}.joinError svg{width:34px;height:34px;color:#a6403a}.joinError h1{color:#172936}.joinCard>.success{padding:45px 28px}.joinCard>.success h1{margin:8px 0}.joinCard>.success p{max-width:440px;text-align:center}
+@media(max-width:850px){.socialTableHead{display:none}.socialRow{grid-template-columns:1fr auto}.socialRow>span:nth-of-type(1),.socialRow>span:nth-of-type(2){display:none}.socialActions{grid-column:1/-1;justify-content:flex-start}.socialStats{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:560px){.socialStats{grid-template-columns:1fr}.joinForm,.joinIntro{padding-left:17px;padding-right:17px}.joinForm .twoCol{grid-template-columns:1fr}}
+
+/* Social signup completion */
+.joinSuccess{
+  min-height:300px;
+  display:flex!important;
+  flex-direction:column;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  padding:48px 28px!important;
+}
+.joinSuccess svg{margin:0 auto 14px!important;}
+.joinSuccess h1,.joinSuccess p{width:100%;text-align:center!important;margin-left:auto!important;margin-right:auto!important;}
+.joinSuccess p{max-width:520px;}
+
+/* Inbox actions for Social signup leads */
+.convActions{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.viewCustomer{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:34px;
+  padding:7px 11px;
+  border:1px solid rgba(23,41,54,.2);
+  border-radius:7px;
+  background:#fff;
+  color:#172936;
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+}
+.viewCustomer svg{width:15px;height:15px;}
+
+/* Structured Social signup message */
+.socialLeadCard{
+  width:min(680px,100%);
+  box-sizing:border-box;
+  border:1px solid rgba(23,41,54,.16);
+  border-radius:10px;
+  background:#fff;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(23,41,54,.05);
+}
+.socialLeadTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:14px 16px;
+  background:#f3efe5;
+  border-bottom:1px solid rgba(23,41,54,.12);
+}
+.socialLeadTitle>div{display:flex;flex-direction:column;gap:3px;}
+.socialLeadTitle span,.socialLeadFields span,.socialLeadNotes>span{
+  font-size:9px;
+  line-height:1.2;
+  font-weight:900;
+  letter-spacing:.09em;
+  color:#6d777d;
+}
+.socialLeadTitle b{font-size:15px;color:#172936;}
+.socialLeadTitle small{font-size:10px;color:#7a8286;white-space:nowrap;}
+.socialLeadFields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+.socialLeadFields>div{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  min-width:0;
+  padding:11px 16px;
+  border-bottom:1px solid rgba(23,41,54,.08);
+}
+.socialLeadFields>div:nth-child(odd){border-right:1px solid rgba(23,41,54,.08);}
+.socialLeadFields b{
+  font-size:12px;
+  line-height:1.35;
+  color:#172936;
+  overflow-wrap:anywhere;
+}
+.socialLeadNotes{padding:13px 16px 15px;}
+.socialLeadNotes p{
+  margin:5px 0 0;
+  padding:0;
+  max-width:none;
+  background:none;
+  border:0;
+  border-radius:0;
+  color:#263943;
+  font-size:12px;
+  line-height:1.5;
+}
+@media(max-width:620px){
+  .socialLeadFields{grid-template-columns:1fr;}
+  .socialLeadFields>div:nth-child(odd){border-right:0;}
+  .socialLeadTitle{align-items:flex-start;flex-direction:column;gap:6px;}
+}
+
+/* Two-way Inbox conversation */
+.messageBlock:has(.outboundBubble){display:flex;justify-content:flex-end;}
+.outboundBubble{
+  margin-left:auto!important;
+  background:#172936!important;
+  color:#fff!important;
+  border-radius:12px 12px 3px 12px!important;
+  text-align:left;
+}
+.outboundBubble small{color:rgba(255,255,255,.7)!important;}
+
+/* Inbox thread layout: one customer conversation, independently scrollable history */
+.adminConversation{min-height:0;overflow:hidden;}
+.adminConversation .bubbles{min-height:0;overflow-y:auto;overflow-x:hidden;scrollbar-gutter:stable;}
+.adminConversation .convHead,.adminConversation .inboxReminder,.adminConversation .reply{flex:0 0 auto;}
+.threadList{min-height:0;overflow-y:auto;}
+.socialSignupEvent{align-self:flex-start;max-width:620px;width:min(620px,92%);border:1px solid #ddd8cc;border-radius:10px;background:#f7f3e9;padding:12px 14px;font-size:12px;}
+.socialSignupEventHead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:9px;}
+.socialSignupEventHead b{font-size:13px;color:#172936;}
+.socialSignupEventHead small{font-size:9px;color:#7a8286;white-space:nowrap;}
+.socialSignupEventGrid{display:flex;gap:8px;flex-wrap:wrap;}
+.socialSignupEventGrid span{display:flex;flex-direction:column;background:#fff;border:1px solid #e4ded2;border-radius:6px;padding:6px 9px;min-width:100px;}
+.socialSignupEventGrid small{font-size:8px;text-transform:uppercase;color:#778087;letter-spacing:.04em;}
+.socialSignupEventGrid b{font-size:11px;color:#172936;}
+.socialSignupEvent>p{margin:9px 0 0;padding-top:8px;border-top:1px solid #e2dcd0;color:#48545b;}
+@media(max-width:800px){.adminConversation{max-height:none;overflow:visible}.adminConversation .bubbles{overflow:visible}.socialSignupEvent{width:100%;max-width:none}}
+
+
+/* ==========================================================
+   V11 - UNIFIED INBOX + APPOINTMENT WORKFLOW
+   ========================================================== */
+.appointmentDecisionActions{display:flex;align-items:center;gap:8px}
+.appointmentThreadEvent{
+  width:min(680px,92%);
+  border:1px solid #d8d2c5;
+  border-left:4px solid #54758b;
+  border-radius:10px;
+  background:#f8f5ed;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+.appointmentThreadEvent.status-requested{border-left-color:#b72b32;background:#fffaf3}
+.appointmentThreadEvent.status-confirmed{border-left-color:#3d7356}
+.appointmentThreadEventHead{display:flex;justify-content:space-between;align-items:flex-start;padding:12px 14px;border-bottom:1px solid #e1ddd3}
+.appointmentThreadEventHead>div{display:flex;flex-direction:column;gap:2px}
+.appointmentThreadEventHead small{font-size:10px;letter-spacing:.08em;font-weight:800;color:#6b7680}
+.appointmentThreadEventHead b{font-size:14px;text-transform:capitalize}
+.appointmentThreadEventHead>span{font-size:10px;color:#879099}
+.appointmentThreadEventGrid{display:grid;grid-template-columns:1fr 1fr}
+.appointmentThreadEventGrid>span{padding:9px 14px;border-right:1px solid #e5e0d6;border-bottom:1px solid #e5e0d6;display:flex;flex-direction:column;gap:2px}
+.appointmentThreadEventGrid small{font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#7b858c;font-weight:800}
+.appointmentThreadEventGrid b{font-size:12px}
+.appointmentThreadEvent>p{margin:0;padding:10px 14px;font-size:12px}
+.appointmentThreadActions{display:flex;justify-content:flex-end;align-items:center;gap:7px;padding:9px 12px}
+.appointmentThreadActions a,.appointmentThreadActions button{font-size:11px;font-weight:800;border-radius:5px;padding:7px 11px;text-decoration:none}
+.appointmentThreadActions a{color:#172936;border:1px solid #c7c9c8;background:#fff}
+.appointmentThreadActions .requestConfirm{background:#b72b32;color:#fff;border:1px solid #b72b32}
+.appointmentThreadActions .requestCancel{background:#fff;color:#8b2429;border:1px solid #d9b9bb}
+@media(max-width:760px){
+  .appointmentThreadEvent{width:100%}
+  .appointmentThreadEventGrid{grid-template-columns:1fr}
+  .appointmentDecisionActions{width:100%;justify-content:flex-end}
+}
+
+
+/* V11.2 branded email composer + settings */
+.emailComposer{display:grid!important;grid-template-columns:1fr auto!important;grid-template-rows:auto auto!important;gap:7px!important;align-items:stretch!important;padding:10px 12px!important;background:#f8f5ed!important;border-top:1px solid #ddd6c8!important}
+.emailComposerMeta{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;gap:12px;color:#6b7479;font-size:10px}
+.emailComposerMeta span{font-weight:900;letter-spacing:.08em;color:#172936}.emailComposerMeta small{font-size:10px}
+.emailComposer textarea{min-height:78px;max-height:180px;resize:vertical;border:1px solid #cfc8bb;border-radius:7px;padding:10px 12px;font:inherit;line-height:1.45;background:#fff;color:#172936}
+.emailComposer>button{align-self:stretch;min-width:46px;border:0;border-radius:7px;background:#b72b32;color:#fff;cursor:pointer}.emailComposer>button:disabled{opacity:.45;cursor:not-allowed}
+.sendConfirmShade{position:fixed;inset:0;z-index:1000;background:rgba(12,25,34,.48);display:grid;place-items:center;padding:18px}
+.sendConfirm{width:min(420px,100%);background:#fff;border-radius:12px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.22);text-align:center}.sendConfirm>svg{width:30px;height:30px;color:#b72b32}.sendConfirm h3{margin:8px 0 6px}.sendConfirm p{margin:0 0 20px;color:#5f696f;font-size:13px}.sendConfirm>div{display:flex;justify-content:center;gap:8px}.sendConfirm button{border:1px solid #cfc8bb;background:#fff;border-radius:6px;padding:9px 13px;font-weight:800;cursor:pointer}.sendConfirm button.confirm{background:#b72b32;border-color:#b72b32;color:#fff}
+.settingsLayout{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(420px,1.2fr);gap:16px;align-items:start}.settingsLayout .settingsCard{margin:0}.settingsCard h2{margin:0 0 14px}.emailTemplateSettings textarea{min-height:74px;resize:vertical}.emailTemplatePreview{margin-top:8px;border:1px solid #d8d1c4;border-radius:10px;overflow:hidden;background:#fff}.emailPreviewHead{background:#172936;color:#fff;padding:18px;text-align:center}.emailPreviewHead img{display:block;width:72px;height:72px;object-fit:contain;margin:0 auto 7px}.emailPreviewHead b{font-size:16px}.emailPreviewBody{padding:22px 26px;font-size:12px;line-height:1.55}.emailPreviewBody>div{padding:14px 16px;background:#f8f5ed;border-left:3px solid #b72b32;border-radius:5px}.previewSignature{white-space:pre-line}.emailPreviewFoot{padding:12px 18px;background:#eee8dc;text-align:center;font-size:10px;color:#6b7479;white-space:pre-line}.settingsSaveBar{grid-column:1/-1;display:flex;align-items:center;gap:12px;justify-content:flex-end}
+@media(max-width:900px){.settingsLayout{grid-template-columns:1fr}.settingsSaveBar{grid-column:1}.emailComposerMeta{align-items:flex-start;flex-direction:column;gap:2px}}

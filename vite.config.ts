@@ -1,4 +1,4 @@
-import { defineConfig, type Plugin } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import type { IncomingMessage, ServerResponse } from 'node:http';
 
@@ -10,7 +10,7 @@ function localVercelApi(): Plugin {
         try {
           const pathname = (req.url || '/').split('?')[0];
           const endpoint = pathname.replace(/^\//, '') || 'health';
-          if (!['submit', 'admin', 'health', 'services'].includes(endpoint)) return next();
+          if (!['submit', 'admin', 'health', 'services', 'social'].includes(endpoint)) return next();
 
           const chunks: Buffer[] = [];
           for await (const chunk of req) chunks.push(Buffer.from(chunk));
@@ -46,6 +46,8 @@ function localVercelApi(): Plugin {
   };
 }
 
-export default defineConfig({
-  plugins: [react(), localVercelApi()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  for (const [key, value] of Object.entries(env)) process.env[key] = value;
+  return { plugins: [react(), localVercelApi()] };
 });

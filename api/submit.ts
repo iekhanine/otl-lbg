@@ -46,8 +46,20 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
 async function notify(db:any,type:string,row:any){
  const {data:s}=await db.from('business_settings').select('*').eq('id',1).maybeSingle();
  if(s?.notifications_enabled===false)return;
- const to=s?.notification_email||'LocalBikeGuyRepair@gmail.com',api=process.env.RESEND_API_KEY;if(!api)return;
+ const to=String(s?.notification_email||'').trim(),api=process.env.RESEND_API_KEY;if(!api||!to)return;
  const subject=type==='appointment'?`New appointment request from ${row.name}`:`New message from ${row.name}`;
  const body=type==='appointment'?[`Service: ${row.service}`,`Requested: ${row.preferred_date||'No date'} ${row.preferred_time||''}`,`Method: ${row.service_method}`,`Email: ${row.email}`,`Phone: ${row.phone}`]:[`Email: ${row.email}`,`Phone: ${row.phone||''}`,`Message: ${row.message}`];
- await new Resend(api).emails.send({from:process.env.NOTIFICATION_FROM_EMAIL||'Local Bike Guy <notifications@onetime-labs.com>',to:[to],subject,html:`<div style="font-family:Arial,sans-serif"><h2>${esc(subject)}</h2>${body.map(x=>`<p>${esc(x)}</p>`).join('')}<p><a href="https://lbg.onetimelabs.net/admin">Open Admin</a></p></div>`});
+ const from=process.env.NOTIFICATION_FROM_EMAIL||'Local Bike Guy <inquiry@onetimelabs.net>';
+ const conversationUrl=`https://lbg.onetimelabs.net/admin/inbox?email=${encodeURIComponent(String(row.email||'').trim().toLowerCase())}`;
+ const sent:any=await new Resend(api).emails.send({
+  from,
+  replyTo:'no-reply@onetimelabs.net',
+  to:[to],
+  subject,
+  html:`<div style="font-family:Arial,sans-serif;max-width:640px;margin:auto;color:#14213d"><h2>${esc(subject)}</h2>${body.map(x=>`<p>${esc(x)}</p>`).join('')}<p style="margin:28px 0"><a href="${conversationUrl}" style="display:inline-block;padding:12px 18px;background:#14213d;color:#fff;text-decoration:none;border-radius:6px">Open Conversation in LBG</a></p><p style="font-size:12px;color:#667085">This is an automated notification. Do not reply to this email. Open the conversation in Local Bike Guy to respond.</p></div>`
+ });
+ if(sent?.error){
+  console.error('[Resend notification error]',sent.error);
+  throw new Error(sent.error.message||'Notification email failed');
+ }
 }
