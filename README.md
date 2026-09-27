@@ -31,3 +31,8 @@ No new database migration is required for V.11.
 - New booking/message notification destination comes only from business_settings.notification_email.
 - Removed obsolete inbound-email and legacy notification endpoints.
 - Run supabase/005_email_template_settings.sql once before using the new Settings template fields.
+
+## V11.2.1 Admin OAuth Session Fix
+- Admin routes wait for Supabase session restoration before mounting protected pages.
+- Admin Login redirects authenticated sessions to /admin.
+- Prevents OAuth callback race that returned successful Google logins to /admin/login.
