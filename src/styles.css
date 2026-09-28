@@ -382,3 +382,258 @@
 
 /* ADMIN AUTH 006 - hold admin UI until Supabase restores OAuth session */
 .adminAuthLoading{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:#f4f0e6;color:#101c2d}.adminAuthLoading .logo{width:112px;height:112px}.adminAuthLoading b{font-size:14px;letter-spacing:.04em}
+
+/* FINAL INBOX CONTROLS - archive/delete, bulk actions, in-chat image lightbox */
+.messageBlock{position:relative;padding-top:26px}
+.messageRecordActions{position:absolute;top:0;right:0;display:flex;gap:4px;opacity:.35;transition:opacity .15s ease}
+.messageBlock:hover .messageRecordActions,.messageBlock.messageSelected .messageRecordActions{opacity:1}
+.messageRecordActions button,.messageBulkBar button,.messageSelectToggle{border:1px solid #d8d4ca;background:#fff;color:#34444d;border-radius:5px;display:inline-flex;align-items:center;gap:5px;justify-content:center;cursor:pointer}
+.messageRecordActions button{width:27px;height:25px;padding:4px}
+.messageRecordActions svg,.messageBulkBar svg{width:14px;height:14px}
+.messageRecordActions .danger,.messageBulkBar .danger{color:#a8292d;border-color:#e3b9ba}
+.messageSelect{position:absolute;top:2px;left:0;display:flex;align-items:center;gap:5px;font-size:10px;color:#52616a}
+.messageSelected{outline:2px solid #8ab7db;outline-offset:4px;border-radius:7px}
+.messageBulkBar{display:flex;align-items:center;gap:7px;padding:9px 12px;border-top:1px solid #ddd8cc;background:#f7f3e9;font-size:11px}
+.messageBulkBar span{font-weight:700;margin-right:auto}
+.messageBulkBar button{padding:7px 9px;font-size:10px}
+.messageBulkBar button:disabled{opacity:.4;cursor:not-allowed}
+.messageSelectToggle{padding:7px 9px!important;background:#fff!important;color:#34444d!important}
+.messagePhotoButton{padding:0;border:0;background:none;cursor:zoom-in;border-radius:6px;overflow:hidden}
+.messagePhotoButton img{transition:transform .15s ease}
+.messagePhotoButton:hover img{transform:scale(1.025)}
+.messageLightbox{position:fixed;inset:0;z-index:1000;background:rgba(5,17,26,.82);display:flex;align-items:center;justify-content:center;padding:28px}
+.messageLightboxInner{position:relative;max-width:min(1000px,94vw);max-height:92vh;display:flex;align-items:center;justify-content:center}
+.messageLightboxInner>img{display:block;max-width:100%;max-height:88vh;object-fit:contain;border-radius:8px;box-shadow:0 18px 60px rgba(0,0,0,.35)}
+.messageLightboxClose{position:absolute;top:-16px;right:-16px;width:36px;height:36px;border:0;border-radius:50%;background:#fff;color:#172936;display:grid;place-items:center;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.25)}
+.messageLightboxClose svg{width:18px;height:18px}
+@media(max-width:800px){.messageRecordActions{opacity:1}.messageBulkBar{position:sticky;bottom:0;z-index:4;flex-wrap:wrap}.messageLightbox{padding:12px}.messageLightboxClose{top:8px;right:8px}}
+
+/* Inbox conversation management */
+.conversationToolbar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.conversationToolbar button,
+.conversationToolbar a {
+  width: auto;
+  flex: 0 0 auto;
+}
+
+.threadListRow {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.threadListRow > button {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.conversationSelect {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+}
+
+.conversationSelect input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* Inbox bulk conversation controls */
+.threadListHeader {
+  border-bottom: 1px solid #ddd8cd;
+}
+
+.threadListHeader h1 {
+  margin-bottom: 8px;
+}
+
+.conversationBulkToolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px 10px;
+  flex-wrap: nowrap;
+}
+
+.bulkSelectControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  color: #34444d;
+  cursor: pointer;
+}
+
+.bulkSelectControl input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.conversationBulkToolbar button {
+  width: auto;
+  min-width: 0;
+  padding: 7px 9px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.conversationBulkToolbar button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.bulkArchiveButton {
+  border: 1px solid #0b6fc2;
+  background: #0b74c9;
+  color: #fff;
+}
+
+.bulkDeleteButton {
+  border: 1px solid #a92027;
+  background: #b72b32;
+  color: #fff;
+}
+
+.conversationBulkToolbar button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+@media(max-width:800px) {
+  .conversationBulkToolbar {
+    gap: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .conversationBulkToolbar button {
+    padding: 6px 7px;
+  }
+}
+
+
+/* Inbox conversation toolbar - intentionally scoped to avoid generic .threadList button rules */
+.threadList .threadListHeader .conversationBulkToolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 0 10px 10px;
+}
+.threadList .conversationBulkToolbar .bulkSelectControl {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.threadList .conversationBulkToolbar button.bulkArchiveButton,
+.threadList .conversationBulkToolbar button.bulkDeleteButton {
+  width: auto;
+  min-width: 0;
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-top: 1px solid transparent;
+  padding: 7px 9px;
+  margin: 0;
+}
+.threadList .conversationBulkToolbar button.bulkArchiveButton {
+  background: #0b74c9;
+  border-color: #0b6fc2;
+  color: #fff;
+}
+.threadList .conversationBulkToolbar button.bulkDeleteButton {
+  background: #b72b32;
+  border-color: #a92027;
+  color: #fff;
+}
+.threadList .conversationBulkToolbar button:disabled {
+  opacity: .45;
+}
+
+/* FINAL ADMIN USABILITY PASS */
+.inboxViewTabs { display:flex; align-items:center; gap:8px; min-width:0; padding:0 10px 12px; }
+.inboxViewTabs button { border:0; background:transparent; padding:0; font:inherit; font-weight:800; color:#66757d; cursor:pointer; }
+.inboxViewTabs button.active { color:#172936; }
+.inboxViewTabs em { min-width:20px; height:20px; display:inline-grid; place-items:center; border-radius:999px; background:#b72b32; color:#fff; font-size:11px; font-style:normal; }
+.bulkRestoreButton { background:#285f8f !important; color:#fff !important; border-color:#285f8f !important; }
+.inboxReminder { align-items:center; }
+.inboxReminderPrimaryActions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.inboxReminderPrimaryActions .viewCustomer,
+.inboxReminderPrimaryActions .createAppt { white-space:nowrap; }
+.customerHeadActions { display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+.customerSearch { display:flex; align-items:center; gap:7px; min-width:260px; border:1px solid #cfc8bb; border-radius:8px; padding:0 10px; background:#fff; }
+.customerSearch svg { width:16px; height:16px; color:#66757d; }
+.customerSearch input { border:0; outline:0; min-width:0; width:100%; padding:10px 0; background:transparent; }
+.customerCard { display:grid !important; grid-template-columns:auto minmax(0,1fr); gap:12px; align-items:start; }
+.customerCardInfo { min-width:0; display:flex; flex-direction:column; }
+.customerCardActions { grid-column:1 / -1; display:flex; gap:6px; flex-wrap:wrap; padding-top:4px; }
+.customerPill { display:inline-flex; align-items:center; justify-content:center; border:1px solid #b8c2c8; background:#fff; color:#172936; border-radius:999px; padding:5px 9px; font-size:11px; font-weight:800; line-height:1; text-decoration:none; cursor:pointer; }
+.customerPill:hover { border-color:#285f8f; color:#285f8f; }
+.customerDetailActions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+@media (max-width: 760px) {
+  .customerHeadActions { width:100%; justify-content:stretch; }
+  .customerSearch { min-width:0; flex:1 1 100%; }
+  .customerHeadActions .btn { width:100%; }
+  .inboxReminderPrimaryActions { width:100%; }
+}
+.threadList .threadListHeader .inboxViewTabs button {
+  width: auto;
+  min-height: 0;
+  display: inline-flex;
+  grid-template-columns: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+.threadList .conversationBulkToolbar button.bulkRestoreButton {
+  width: auto;
+  min-width: 0;
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  justify-content: center;
+  border-top: 1px solid #285f8f;
+  padding: 7px 9px;
+  margin: 0;
+}
+
+
+/* Compact Customers explorer */
+.customerExplorer { margin-top:16px; padding:0 !important; overflow:hidden; }
+.customerExplorerLoading { padding:18px; margin:0; }
+.customerExplorer .emptyAdmin { padding:30px; }
+.customerExplorerRow { display:grid; grid-template-columns:34px minmax(240px,1fr) auto; align-items:center; gap:10px; min-height:58px; padding:8px 12px; border-bottom:1px solid #e7e1d6; }
+.customerExplorerRow:last-child { border-bottom:0; }
+.customerExplorerRow:hover { background:#f8f5ee; }
+.customerExplorerAvatar { width:30px; height:30px; border-radius:50%; display:grid; place-items:center; background:#17263b; color:#fff; font-size:11px; font-weight:900; }
+.customerExplorerIdentity { min-width:0; display:flex; flex-direction:column; gap:1px; }
+.customerExplorerIdentity b { font-size:12px; color:#172936; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.customerExplorerIdentity span,.customerExplorerIdentity small { font-size:10px; color:#68757c; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.customerExplorerActions { display:flex; align-items:center; justify-content:flex-end; gap:6px; white-space:nowrap; }
+.customerExplorerActions .customerPill { padding:5px 8px; font-size:10px; }
+@media(max-width:950px){.customerExplorerRow{grid-template-columns:34px minmax(0,1fr)}.customerExplorerActions{grid-column:2;justify-content:flex-start;white-space:normal;flex-wrap:wrap;padding-top:3px}}
+@media(max-width:600px){.customerExplorerRow{padding:10px}.customerExplorerActions .customerPill{font-size:9px;padding:5px 7px}}
