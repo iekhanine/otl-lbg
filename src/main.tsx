@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createClient } from '@supabase/supabase-js';
-import { CalendarDays, MessageCircle, Wrench, Settings, Users, Inbox, ChevronRight, ChevronLeft, Check, Upload, MapPin, Truck, Home as HomeIcon, AlertCircle, Send, ArrowLeft, GripVertical, LogOut, Plus, Link as LinkIcon, Copy, ExternalLink, Power, Share2, Trash2, Archive, X, Search } from 'lucide-react';
+import { CalendarDays, MessageCircle, Wrench, Settings, Users, Inbox, ChevronRight, ChevronLeft, Check, Upload, MapPin, Truck, Home as HomeIcon, AlertCircle, Send, ArrowLeft, GripVertical, LogOut, Plus, Link as LinkIcon, Copy, ExternalLink, Power, Share2, Trash2, Archive, X, Search, FileText, Eye, EyeOff, Image as ImageIcon, Type, Columns3, Minus, Quote, ArrowUp, ArrowDown } from 'lucide-react';
 import './styles.css';
 const U = import.meta.env.VITE_SUPABASE_URL || '', K = import.meta.env.VITE_SUPABASE_ANON_KEY || '', db = U && K ? createClient(U, K) : null;
 class ApiError extends Error {
@@ -43,7 +43,7 @@ const demoM = [['Jen R.', 'My rear derailleur keeps skipping...', '10:24 AM'], [
 function Logo({ large = false }: {
     large?: boolean;
 }) { return <img className={large ? 'logo large' : 'logo'} src="/lbg-logo-badge.png" alt="Local Bike Guy Bicycle Repair"/>; }
-function Header() { return <header className="top"><a href="/"><Logo /></a><nav><a href="/">Home</a><a href="/book">Book a Repair</a><a href="/services">Services</a><a href="/contact">Contact</a><a className="adminLogin" href="/admin/login">Admin Login</a></nav></header>; }
+function Header() { const [pages,setPages]=useState<any[]>([]); React.useEffect(()=>{apiJson('/api/pages?nav=1').then((x:any)=>setPages(Array.isArray(x)?x:[])).catch(()=>{});},[]); return <header className="top"><a href="/"><Logo /></a><nav><a href="/">Home</a><a href="/book">Book a Repair</a><a href="/services">Services</a>{pages.map((x:any)=><a href={`/${x.slug}`} key={x.id}>{x.menu_label||x.title}</a>)}<a href="/contact">Contact</a><a className="adminLogin" href="/admin/login">Admin Login</a></nav></header>; }
 function Shell({ children }: {
     children: React.ReactNode;
 }) { return <div className="public"><Header />{children}</div>; }
@@ -513,20 +513,167 @@ finally {
     setBusy(false);
 } } return <BookingShell><main className="joinPage"><div className="joinCard">{loading ? <p>Loading signup link...</p> : error && !link ? <div className="joinError"><AlertCircle /><h1>Link unavailable</h1><p>{error}</p></div> : done ? <div className="success joinSuccess"><Check /><h1>You're all set.</h1><p>Your customer profile has been created. I'll follow up with you about your bike{link?.service_name ? ` and ${link.service_name}` : ''}.</p></div> : <><div className="joinIntro"><Logo /><span>LOCAL BIKE GUY</span><h1>{link?.customer_name ? `Hey ${link.customer_name}, let's get your bike set up.` : "Let's get your bike set up."}</h1><p>{link?.service_name ? `${link.service_name} is already selected. Just add your contact and bike information below.` : 'Add your contact and bike information below.'}</p>{link?.source && <small>Signup source: {link.source}</small>}</div>{error && <p className="adminError">{error}</p>}<form className="joinForm" onSubmit={submit}><h3>Your Information</h3><div className="twoCol"><label>Name *<input name="name" required defaultValue={link?.customer_name || ''}/></label><label>Phone *<input name="phone" required/></label></div><label>Email *<input name="email" type="email" required/></label><h3>Your Bike</h3><div className="twoCol"><label>Make<input name="make" placeholder="Trek"/></label><label>Model<input name="model" placeholder="Marlin 7"/></label></div><div className="twoCol"><label>Year<input name="year" placeholder="2022"/></label><label>Bike Type<select name="bike_type"><option value="">Select...</option><option>Mountain</option><option>Road</option><option>Gravel</option><option>Hybrid / Commuter</option><option>Kids</option><option>Other</option></select></label></div>{link?.service_name && <div className="joinService"><span>SERVICE</span><b>{link.service_name}</b></div>}<label>Anything I should know?<textarea name="notes" placeholder="Tell me what's going on with the bike..."/></label><button className="btn red" disabled={busy}>{busy ? 'Creating Profile...' : 'Create My Profile'}<ChevronRight /></button></form></>}</div></main></BookingShell>; }
 function Availability() { return <AdminShell active="Availability"><div className="adminHead"><h1>Availability</h1></div><section className="panel settingsCard"><p>Availability controls are ready for the next scheduling pass. Current bookings remain request-based, so customers request a date/time and you confirm it from Appointments.</p></section></AdminShell>; }
+
+type PageBlock = { id:string; type:string; html?:string; url?:string; alt?:string; label?:string; href?:string; buttonColor?:'red'|'blue'|'navy'; buttonAlign?:'left'|'center'|'right'; columns?:number; items?:string[] };
+const newBlock=(type:string):PageBlock=>({id:globalThis.crypto?.randomUUID?.()||`${Date.now()}-${Math.random()}`,type,...(type==='richtext'?{html:'<p>Start writing here...</p>'}:type==='quote'?{html:'A quote or callout'}:type==='button'?{label:'Learn More',href:'/',buttonColor:'red',buttonAlign:'left'}:type==='columns'?{columns:2,items:['<p>Column one</p>','<p>Column two</p>']}:{})});
+function RichEditor({value,onChange}:{value:string;onChange:(v:string)=>void}) {
+  const ref=React.useRef<HTMLDivElement>(null);
+  const lastValue=React.useRef(value||'');
+  React.useEffect(()=>{
+    if(ref.current && document.activeElement!==ref.current && ref.current.innerHTML!==(value||'')){
+      ref.current.innerHTML=value||'';
+      lastValue.current=value||'';
+    }
+  },[value]);
+  function emit(){
+    const html=ref.current?.innerHTML||'';
+    lastValue.current=html;
+    onChange(html);
+  }
+  function cmd(name:string,arg?:string){
+    ref.current?.focus();
+    document.execCommand(name,false,arg);
+    emit();
+  }
+  return <div className="richEditor">
+    <div className="richToolbar">
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('bold')}><b>B</b></button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('italic')}><i>I</i></button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('underline')}><u>U</u></button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('formatBlock','h2')}>H2</button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('formatBlock','h3')}>H3</button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('insertUnorderedList')}>• List</button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('justifyLeft')}>Left</button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('justifyCenter')}>Center</button>
+      <button type="button" onMouseDown={e=>e.preventDefault()} onClick={()=>cmd('justifyRight')}>Right</button>
+    </div>
+    <div ref={ref} className="richCanvas" contentEditable suppressContentEditableWarning onInput={emit}/>
+  </div>
+}
+function PageBlocks({blocks,editable=false,onChange}:{blocks:PageBlock[];editable?:boolean;onChange?:(x:PageBlock[])=>void}) {
+  const [openId,setOpenId]=useState<string|null>(blocks[0]?.id||null);
+  const [dragId,setDragId]=useState<string|null>(null);
+  function update(i:number,patch:any){onChange?.(blocks.map((b,n)=>n===i?{...b,...patch}:b))}
+  function remove(i:number){const id=blocks[i]?.id;onChange?.(blocks.filter((_,n)=>n!==i));if(openId===id)setOpenId(null)}
+  function moveDragged(targetId:string){
+    if(!dragId||dragId===targetId)return;
+    const from=blocks.findIndex(b=>b.id===dragId),to=blocks.findIndex(b=>b.id===targetId);
+    if(from<0||to<0)return;
+    const a=[...blocks], [item]=a.splice(from,1);a.splice(to,0,item);onChange?.(a);setDragId(null);
+  }
+  function label(b:PageBlock){
+    if(b.type==='richtext')return 'Rich Text';
+    if(b.type==='columns')return `${b.columns||2} Columns`;
+    return b.type.charAt(0).toUpperCase()+b.type.slice(1);
+  }
+  if(!editable)return <div className="pageBlocks">{blocks.map(b=><section className={`pageBlock pageBlock-${b.type}`} key={b.id}>
+    {b.type==='richtext'&&<div className="publicRich" dangerouslySetInnerHTML={{__html:b.html||''}}/>}
+    {b.type==='quote'&&<blockquote>{b.html}</blockquote>}
+    {b.type==='divider'&&<hr/>}
+    {b.type==='button'&&<div className={`customPageButtonWrap align-${b.buttonAlign||'left'}`}><a className={`btn ${b.buttonColor||'red'} customPageButton`} href={b.href||'#'}>{b.label||'Learn More'}</a></div>}
+    {b.type==='image'&&b.url&&<figure><img src={b.url} alt={b.alt||''}/>{b.alt&&<figcaption>{b.alt}</figcaption>}</figure>}
+    {b.type==='columns'&&<div className={`pageColumns cols${b.columns||2}`}>{(b.items||[]).map((x,n)=><div className="publicRich" key={n} dangerouslySetInnerHTML={{__html:x}}/>)}</div>}
+  </section>)}</div>;
+  return <div className="pageBlocks editing">{blocks.map((b,i)=>{
+    const open=openId===b.id;
+    return <section className={`pageBlock pageBlock-${b.type} ${open?'blockOpen':'blockCollapsed'}`} key={b.id}
+      draggable onDragStart={()=>setDragId(b.id)} onDragOver={e=>e.preventDefault()} onDrop={()=>moveDragged(b.id)}>
+      <div className="blockTools" onClick={()=>setOpenId(open?null:b.id)}>
+        <GripVertical className="blockDrag"/>
+        <span>{label(b)}</span>
+        <small>{open?'Click to collapse':'Click to edit'}</small>
+        <button type="button" onClick={e=>{e.stopPropagation();remove(i)}}><Trash2/></button>
+      </div>
+      {open&&<div className="blockBody">
+        {b.type==='richtext'&&<RichEditor value={b.html||''} onChange={v=>update(i,{html:v})}/>}
+        {b.type==='quote'&&<textarea value={b.html||''} onChange={e=>update(i,{html:e.target.value})}/>}
+        {b.type==='divider'&&<hr/>}
+        {b.type==='button'&&<div className="buttonBlockEditor"><div className="blockFields"><input value={b.label||''} placeholder="Button text" onChange={e=>update(i,{label:e.target.value})}/><input value={b.href||''} placeholder="Link / URL" onChange={e=>update(i,{href:e.target.value})}/></div><div className="buttonOptions"><div><span>Button Color</span><div className="buttonChoiceGroup"><button type="button" className={(b.buttonColor||'red')==='red'?'active redChoice':''} onClick={()=>update(i,{buttonColor:'red'})}>Red</button><button type="button" className={b.buttonColor==='blue'?'active blueChoice':''} onClick={()=>update(i,{buttonColor:'blue'})}>Blue</button><button type="button" className={b.buttonColor==='navy'?'active navyChoice':''} onClick={()=>update(i,{buttonColor:'navy'})}>Navy</button></div></div><div><span>Alignment</span><div className="buttonChoiceGroup"><button type="button" className={(b.buttonAlign||'left')==='left'?'active':''} onClick={()=>update(i,{buttonAlign:'left'})}>Left</button><button type="button" className={b.buttonAlign==='center'?'active':''} onClick={()=>update(i,{buttonAlign:'center'})}>Center</button><button type="button" className={b.buttonAlign==='right'?'active':''} onClick={()=>update(i,{buttonAlign:'right'})}>Right</button></div></div></div><div className={`buttonPreview align-${b.buttonAlign||'left'}`}><a className={`btn ${b.buttonColor||'red'} customPageButton`}>{b.label||'Learn More'}</a></div></div>}
+        {b.type==='image'&&<ImageBlock block={b} onChange={x=>update(i,x)}/>}
+        {b.type==='columns'&&<><div className="columnCount"><button type="button" className={b.columns===2?'active':''} onClick={()=>update(i,{columns:2,items:[...(b.items||[]).slice(0,2),...Array(Math.max(0,2-(b.items||[]).length)).fill('<p>New column</p>')]})}>2 Columns</button><button type="button" className={b.columns===3?'active':''} onClick={()=>update(i,{columns:3,items:[...(b.items||[]).slice(0,3),...Array(Math.max(0,3-(b.items||[]).length)).fill('<p>New column</p>')]})}>3 Columns</button></div><div className={`pageColumns cols${b.columns||2}`}>{(b.items||[]).slice(0,b.columns||2).map((x,n)=><RichEditor key={`${b.id}-${n}`} value={x} onChange={v=>{const items=[...(b.items||[])];items[n]=v;update(i,{items})}}/>)}</div></>}
+      </div>}
+    </section>
+  })}</div>
+}
+function ImageBlock({block,onChange}:{block:PageBlock;onChange:(x:any)=>void}) { const [busy,setBusy]=useState(false); async function pick(f?:File){if(!f)return;setBusy(true);try{const data=await new Promise<string>((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||''));r.onerror=()=>reject(r.error);r.readAsDataURL(f)});const x=await pageAdminFetch('upload',{method:'POST',body:JSON.stringify({name:f.name,data})});onChange({url:x.url,alt:block.alt||f.name})}catch(e:any){alert(e.message)}finally{setBusy(false)}} return <div className="imageBlockEditor">{block.url&&<img src={block.url} alt={block.alt||''}/>}<label className="btn outline"><ImageIcon/>{busy?'Uploading...':'Choose Image'}<input hidden type="file" accept="image/jpeg,image/png,image/webp" onChange={e=>pick(e.target.files?.[0])}/></label><input value={block.alt||''} placeholder="Image caption / alt text" onChange={e=>onChange({alt:e.target.value})}/></div> }
+async function pageAdminFetch(action:string,options:any={}) { if(!db)throw new Error('Supabase is not configured'); const {data}=await db.auth.getSession();const token=data.session?.access_token;if(!token)throw new Error('Sign in required');return apiJson(`/api/pages?action=${encodeURIComponent(action)}`,{...options,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`,...options.headers}}); }
+function CustomPagesSettings(){
+  const [pages,setPages]=useState<any[]>([]),[editing,setEditing]=useState<any>(null),[preview,setPreview]=useState(false),[error,setError]=useState(''),[dragPage,setDragPage]=useState<string|null>(null);
+  const [linkTreeOpen,setLinkTreeOpen]=useState(false),[copiedPage,setCopiedPage]=useState(''),[saveNotice,setSaveNotice]=useState('');
+  const slugify=(v:string)=>v.toLowerCase().trim().replace(/[^a-z0-9-]+/g,'-').replace(/^-|-$/g,'');
+  function changeTitle(title:string){const previousAuto=slugify(editing?.title||'');const nextSlug=!editing?.slug||editing.slug===previousAuto?slugify(title):editing.slug;setEditing({...editing,title,menu_label:editing?.menu_label||title,slug:nextSlug})}
+  async function copyPageUrl(page:any){const url=`${location.origin}/${page.slug}`;await navigator.clipboard.writeText(url);setCopiedPage(page.id||page.slug);setTimeout(()=>setCopiedPage(''),1400)}
+  async function load(){try{setError('');setPages(await pageAdminFetch('list'))}catch(e:any){setError(e.message)}}
+  React.useEffect(()=>{load()},[]);
+  function fresh(){setEditing({title:'',menu_label:'',slug:'',published:false,show_in_menu:false,menu_order:pages.length,content:[newBlock('richtext')]});setPreview(false)}
+  async function save(){try{setError('');setSaveNotice('');const method=editing.id?'PATCH':'POST';const saved=await pageAdminFetch('save',{method,body:JSON.stringify(editing)});setEditing(saved);await load();setSaveNotice(`Page saved successfully${saved?.title?`: ${saved.title}`:''}.`);setTimeout(()=>setSaveNotice(''),3000)}catch(e:any){setError(e.message)}}
+  async function drop(x:any){if(!confirm(`Delete ${x.title}?`))return;await pageAdminFetch('delete',{method:'DELETE',body:JSON.stringify({id:x.id})});if(editing?.id===x.id)setEditing(null);load()}
+  function add(type:string){const block=newBlock(type);setEditing({...editing,content:[...(editing.content||[]),block]})}
+  async function reorderPage(targetId:string){
+    if(!dragPage||dragPage===targetId)return;
+    const from=pages.findIndex(x=>x.id===dragPage),to=pages.findIndex(x=>x.id===targetId);
+    if(from<0||to<0)return;
+    const next=[...pages],[item]=next.splice(from,1);next.splice(to,0,item);
+    const ordered=next.map((x,i)=>({...x,menu_order:i}));
+    setPages(ordered);setDragPage(null);
+    try{await pageAdminFetch('reorder',{method:'PATCH',body:JSON.stringify({ids:ordered.map(x=>x.id)})});if(editing?.id)setEditing((cur:any)=>({...cur,menu_order:ordered.find(x=>x.id===cur.id)?.menu_order??cur.menu_order}))}catch(e:any){setError(e.message);load()}
+  }
+  return <AdminShell active="Settings">
+    <div className="adminHead"><div><h1>Settings / Custom Pages</h1><p>Create public pages and top-menu items without editing code.</p></div><button className="btn red" onClick={fresh}><Plus/>New Page</button></div>
+    {error&&<p className="adminError">{error}</p>}
+    {saveNotice&&<div className="pageSaveNotice"><Check/> <span>{saveNotice}</span></div>}
+    <div className="pageManager">
+      <aside className="panel pageList">
+        <a className="backSettings" href="/admin/settings">← Business Settings</a>
+        <h2>Custom Pages</h2>
+        <p className="pageListHint">Drag pages to change their top-menu order.</p>
+        {pages.map(x=><button draggable onDragStart={()=>setDragPage(x.id)} onDragOver={e=>e.preventDefault()} onDrop={()=>reorderPage(x.id)} className={editing?.id===x.id?'active':''} onClick={()=>{setEditing({...x,content:Array.isArray(x.content)?x.content:[]});setPreview(false)}} key={x.id}>
+          <GripVertical className="pageDrag"/>
+          <span><b>{x.title}</b><small>/{x.slug}</small></span>{x.published?<Eye/>:<EyeOff/>}
+        </button>)}
+        {!pages.length&&<p className="muted">No custom pages yet.</p>}
+      </aside>
+      <section className="panel pageEditor">
+        {!editing?<div className="emptyAdmin"><FileText/><h2>Create your first page</h2><p>Add an About page, policies, service information, or anything else you want in the top menu.</p><button className="btn red" onClick={fresh}>New Page</button></div>:<>
+          <div className="pageEditorHead"><div className="pageTitleField"><label>Page Title</label><input className="pageTitleInput" placeholder="Enter page title..." value={editing.title} onChange={e=>changeTitle(e.target.value)}/><span>{editing.slug?`Direct URL: ${location.origin}/${editing.slug}`:'Enter a title to create the page URL'}</span></div><div><button className="btn outline" onClick={()=>setPreview(!preview)}>{preview?<Type/>:<Eye/>}{preview?'Edit':'Preview'}</button><button className="btn red" onClick={save}>Save Page</button></div></div>
+          {preview?<div className="customPagePreview"><h1>{editing.title}</h1><PageBlocks blocks={editing.content||[]}/></div>:<>
+            <div className="pageMeta">
+              <label>Menu Label<input placeholder="About" value={editing.menu_label||''} onChange={e=>setEditing({...editing,menu_label:e.target.value})}/></label>
+              <label>URL Slug<input placeholder="about" value={editing.slug||''} onChange={e=>setEditing({...editing,slug:slugify(e.target.value)})}/></label>
+              <div className="pageToggleGroup">
+                <label className="pageCheck"><input type="checkbox" checked={!!editing.show_in_menu} onChange={e=>setEditing({...editing,show_in_menu:e.target.checked})}/><span>Show in Top Menu</span></label>
+                <label className="pageCheck"><input type="checkbox" checked={!!editing.published} onChange={e=>setEditing({...editing,published:e.target.checked})}/><span>Published</span></label>
+              </div>
+            </div>
+            <div className="documentBuilder">
+              <div className="blockAddBar"><b>Add Content</b><button onClick={()=>add('richtext')}><Type/>Text</button><button onClick={()=>add('image')}><ImageIcon/>Image</button><button onClick={()=>add('columns')}><Columns3/>Columns</button><button onClick={()=>add('quote')}><Quote/>Quote</button><button onClick={()=>add('button')}><LinkIcon/>Create Button</button><button onClick={()=>add('divider')}><Minus/>Divider</button><button className="linkTreeToggle" onClick={()=>setLinkTreeOpen(!linkTreeOpen)}><FileText/>{linkTreeOpen?'Hide Link Tree':'Link Tree'}</button></div>
+              {linkTreeOpen&&<div className="pageLinkTree"><div className="linkTreeHead"><div><b>Page Link Tree</b><span>Every saved custom page has a direct URL, even when it is not shown in the top menu.</span></div></div>{pages.length===0?<p className="muted">Save your first page and its direct link will appear here.</p>:pages.map(page=><div className="linkTreeRow" key={page.id}><div><b>{page.title}</b><span className={page.published?'pageStatus live':'pageStatus draft'}>{page.published?'Published':'Unlisted'}</span><small>/{page.slug}</small><code>{`${location.origin}/${page.slug}`}</code></div><div><button type="button" onClick={()=>copyPageUrl(page)}><Copy/>{copiedPage===(page.id||page.slug)?'Copied':'Copy URL'}</button><a href={`/${page.slug}`} target="_blank" rel="noreferrer"><ExternalLink/>Open</a></div></div>)}</div>}
+              <p className="builderHint">Each section stays compact until you open it. Drag a section by its handle to reorder the page.</p>
+              <PageBlocks blocks={editing.content||[]} editable onChange={content=>setEditing({...editing,content})}/>
+            </div>
+            {editing.id&&<div className="pageDanger"><button className="btn red" onClick={()=>drop(editing)}><Trash2/>Delete Page</button></div>}
+          </>}
+        </>}
+      </section>
+    </div>
+  </AdminShell>
+}
+function CustomPage(){const slug=location.pathname.replace(/^\//,'');const [page,setPage]=useState<any>(null),[error,setError]=useState('');React.useEffect(()=>{apiJson(`/api/pages?slug=${encodeURIComponent(slug)}`).then(setPage).catch(e=>setError(e.message))},[slug]);return <Shell><main className="page customPublicPage">{error?<><h1>Page not found</h1><p>{error}</p></>:!page?<p>Loading...</p>:<><h1>{page.title}</h1><PageBlocks blocks={Array.isArray(page.content)?page.content:[]}/></>}</main></Shell>}
+
 function AdminSettings() { const [settings, setSettings] = useState<any>(null), [error, setError] = useState(''), [saved, setSaved] = useState(false); React.useEffect(() => { adminFetch('settings').then((x: any) => setSettings({ ...x, email_template_intro: x.email_template_intro || 'Thanks for reaching out. Here is a response from Local Bike Guy:', email_template_signature: x.email_template_signature || 'Thanks,\nLocal Bike Guy', email_template_footer: x.email_template_footer || 'Bicycle repair in SE Wisconsin • Appointment only • No e-bikes' })).catch(e => setError(e.message)); }, []); async function save(e: React.FormEvent) { e.preventDefault(); setSaved(false); try {
     await adminFetch('settings', { method: 'PATCH', body: JSON.stringify(settings) });
     setSaved(true);
 }
 catch (e: any) {
     setError(e.message);
-} } return <AdminShell active="Settings"><div className="adminHead"><div><h1>Settings</h1><p>Business notifications and customer email branding.</p></div></div>{error && <p className="adminError">{error}</p>}{settings && <form className="settingsLayout" onSubmit={save}><section className="panel settingsCard"><h2>Notifications</h2><label>Business Name<input value={settings.business_name || ''} onChange={e => setSettings({ ...settings, business_name: e.target.value })}/></label><label>Notification Email<input type="email" required value={settings.notification_email || ''} onChange={e => setSettings({ ...settings, notification_email: e.target.value })}/><small>All new booking and message notifications are sent to this address. There is no hard-coded fallback recipient.</small></label><label className="toggle"><input type="checkbox" checked={!!settings.notifications_enabled} onChange={e => setSettings({ ...settings, notifications_enabled: e.target.checked })}/><span><b>Email Notifications</b><small>Turn this off while testing to send zero notification emails.</small></span></label></section><section className="panel settingsCard emailTemplateSettings"><h2>Customer Email Template</h2><p className="muted">Replies sent from Inbox use this branded template and the Local Bike Guy logo.</p><label>Intro Text<textarea value={settings.email_template_intro || ''} onChange={e => setSettings({ ...settings, email_template_intro: e.target.value })}/></label><label>Signature<textarea value={settings.email_template_signature || ''} onChange={e => setSettings({ ...settings, email_template_signature: e.target.value })}/></label><label>Footer<textarea value={settings.email_template_footer || ''} onChange={e => setSettings({ ...settings, email_template_footer: e.target.value })}/></label><div className="emailTemplatePreview"><div className="emailPreviewHead"><img src="/lbg-logo-badge.png"/><b>{settings.business_name || 'Local Bike Guy'}</b></div><div className="emailPreviewBody"><p>Hi Customer,</p><p>{settings.email_template_intro}</p><div>Your reply from the Inbox will appear here.</div><p className="previewSignature">{settings.email_template_signature}</p></div><div className="emailPreviewFoot">{settings.email_template_footer}</div></div></section><div className="settingsSaveBar"><button className="btn red">Save Settings</button>{saved && <b className="saved">Saved.</b>}</div></form>}</AdminShell>; }
+} } return <AdminShell active="Settings"><div className="adminHead"><div><h1>Settings</h1><p>Business notifications and customer email branding.</p></div></div>{error && <p className="adminError">{error}</p>}{settings && <form className="settingsLayout" onSubmit={save}><section className="panel settingsCard"><h2>Notifications</h2><label>Business Name<input value={settings.business_name || ''} onChange={e => setSettings({ ...settings, business_name: e.target.value })}/></label><label>Notification Email<input type="email" required value={settings.notification_email || ''} onChange={e => setSettings({ ...settings, notification_email: e.target.value })}/><small>All new booking and message notifications are sent to this address. There is no hard-coded fallback recipient.</small></label><label className="toggle"><input type="checkbox" checked={!!settings.notifications_enabled} onChange={e => setSettings({ ...settings, notifications_enabled: e.target.checked })}/><span><b>Email Notifications</b><small>Turn this off while testing to send zero notification emails.</small></span></label></section><section className="panel settingsCard customPagesSettings"><h2>Custom Pages</h2><p className="muted">Create Word-style public pages and add them to the top navigation.</p><a className="btn outline" href="/admin/settings/pages"><FileText/>Manage Custom Pages</a></section><section className="panel settingsCard emailTemplateSettings"><h2>Customer Email Template</h2><p className="muted">Replies sent from Inbox use this branded template and the Local Bike Guy logo.</p><label>Intro Text<textarea value={settings.email_template_intro || ''} onChange={e => setSettings({ ...settings, email_template_intro: e.target.value })}/></label><label>Signature<textarea value={settings.email_template_signature || ''} onChange={e => setSettings({ ...settings, email_template_signature: e.target.value })}/></label><label>Footer<textarea value={settings.email_template_footer || ''} onChange={e => setSettings({ ...settings, email_template_footer: e.target.value })}/></label><div className="emailTemplatePreview"><div className="emailPreviewHead"><img src="/lbg-logo-badge.png"/><b>{settings.business_name || 'Local Bike Guy'}</b></div><div className="emailPreviewBody"><p>Hi Customer,</p><p>{settings.email_template_intro}</p><div>Your reply from the Inbox will appear here.</div><p className="previewSignature">{settings.email_template_signature}</p></div><div className="emailPreviewFoot">{settings.email_template_footer}</div></div></section><div className="settingsSaveBar"><button className="btn red">Save Settings</button>{saved && <b className="saved">Saved.</b>}</div></form>}</AdminShell>; }
 function App() { let p = location.pathname; if (p === '/book')
     return <Book />; if (p === '/services')
     return <Services />; if (p === '/contact')
     return <Contact />; if (p.startsWith('/join/'))
     return <Join />; if (p === '/admin/login')
     return <AdminLogin />; if (p.startsWith('/admin')) {
-    let page: React.ReactNode = p === '/admin/inbox' ? <AdminInbox /> : p === '/admin/appointments' ? <Appointments /> : p === '/admin/customers' ? <Customers /> : p === '/admin/socials' ? <Socials /> : p === '/admin/services' ? <AdminServices /> : p === '/admin/availability' ? <Availability /> : p === '/admin/settings' ? <AdminSettings /> : <Dashboard />;
+    let page: React.ReactNode = p === '/admin/inbox' ? <AdminInbox /> : p === '/admin/appointments' ? <Appointments /> : p === '/admin/customers' ? <Customers /> : p === '/admin/socials' ? <Socials /> : p === '/admin/services' ? <AdminServices /> : p === '/admin/availability' ? <Availability /> : p === '/admin/settings/pages' ? <CustomPagesSettings /> : p === '/admin/settings' ? <AdminSettings /> : <Dashboard />;
     return <AdminRouteGate>{page}</AdminRouteGate>;
-} return <Home />; }
+} if (p === '/') return <Home />; return <CustomPage />; }
 createRoot(document.getElementById('root')!).render(<App />);

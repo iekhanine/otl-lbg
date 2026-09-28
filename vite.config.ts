@@ -10,7 +10,7 @@ function localVercelApi(): Plugin {
         try {
           const pathname = (req.url || '/').split('?')[0];
           const endpoint = pathname.replace(/^\//, '') || 'health';
-          if (!['submit', 'admin', 'health', 'services', 'social'].includes(endpoint)) return next();
+          if (!['submit', 'admin', 'health', 'services', 'social', 'pages'].includes(endpoint)) return next();
 
           const chunks: Buffer[] = [];
           for await (const chunk of req) chunks.push(Buffer.from(chunk));
