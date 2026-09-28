@@ -9,7 +9,7 @@ function localVercelApi(): Plugin {
       server.middlewares.use('/api', async (req: IncomingMessage, res: ServerResponse, next) => {
         try {
           const pathname = (req.url || '/').split('?')[0];
-          const endpoint = pathname.replace(/^\//, '') || 'health';
+          const endpoint = pathname.replace(/^\/+/, '') || 'health';
           if (!['submit', 'admin', 'health', 'services', 'social', 'pages'].includes(endpoint)) return next();
 
           const chunks: Buffer[] = [];
