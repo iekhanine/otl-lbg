@@ -1,0 +1,17 @@
+LBG 13 - appointments API repair
+
+Changes from LBG 12:
+- Added a dedicated /api/appointments serverless endpoint for authenticated admin appointment reads/writes.
+- Admin appointment requests no longer depend on the large /api/admin endpoint.
+- Added the appointments endpoint to the local Vite API middleware.
+- Preserves the LBG 12 changes: Inbox appointment conversations, e-bike booking, 15-minute time selectors everywhere, configurable/reorderable top menu, configurable logo URL.
+- Project contents are packaged at the ZIP root (not inside an extra wrapper folder).
+- dist is intentionally omitted so Vercel builds from current source.
+
+2026-10-03 homepage service curation update
+- Services admin drag order now persists through /api/admin?resource=service_order.
+- Admin can pin up to 3 active services into a Most Common Services row on the homepage.
+- Admin can choose Original Tiles, Solid Red, Clean Outline, or Wide Buttons for regular homepage services.
+- Site display settings are stored in the existing hidden lbg_pages siteconfig record; no new database table/migration required.
+- Service price types now support fixed, hourly, and Email for quote.
+- Quote services link to Contact and prefill a quote request message.

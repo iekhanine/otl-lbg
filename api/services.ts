@@ -1,6 +1,7 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import{createClient}from'@supabase/supabase-js';
 export default async function handler(req:VercelRequest,res:VercelResponse){
+ res.setHeader('Cache-Control','no-store, max-age=0');
  if(req.method!=='GET')return res.status(405).json({error:'Method not allowed'});
  const url=process.env.SUPABASE_URL||process.env.VITE_SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
  if(!url||!key)return res.status(503).json({error:'Server database is not configured'});

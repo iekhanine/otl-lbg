@@ -3,6 +3,7 @@ import {createClient} from '@supabase/supabase-js';
 import {Resend} from 'resend';
 import crypto from 'node:crypto';
 const esc=(s:any)=>String(s??'').replace(/[<>&]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;'}[c]!));
+const isQuarterHour=(value:any)=>!value||/^(?:[01]\d|2[0-3]):(?:00|15|30|45)(?::00)?$/.test(String(value));
 export default async function handler(req:VercelRequest,res:VercelResponse){
  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
  const url=process.env.SUPABASE_URL||process.env.VITE_SUPABASE_URL,key=process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -11,6 +12,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
  try{
   if(type==='appointment'){
    const row=b.appointment;if(!row?.name||!row?.email||!row?.phone||!row?.service)return res.status(400).json({error:'Missing required booking information'});
+   if(!isQuarterHour(row?.preferred_time))return res.status(400).json({error:'Appointment times must be in 15-minute increments'});
    const email=String(row.email).trim().toLowerCase();
     const {data:customer,error:customerError}=await db.from('lbg_customers').upsert({name:row.name,email,phone:row.phone||'',updated_at:new Date().toISOString()},{onConflict:'email'}).select().single();
     if(customerError)throw customerError;
@@ -21,7 +23,12 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
      if(existingBike?.id)bikeId=existingBike.id;
      else{const {data:newBike,error:bikeInsertError}=await db.from('lbg_customer_bikes').insert({customer_id:customer.id,model:String(row.bike)}).select('id').single();if(bikeInsertError)throw bikeInsertError;bikeId=newBike.id;}
     }
-    const appointment={...row,customer_id:customer.id,bike_id:bikeId};
+    const {bike_type_hint,...appointmentRow}=row;
+    if(bikeId&&bike_type_hint){
+     const {error:bikeTypeError}=await db.from('lbg_customer_bikes').update({bike_type:String(bike_type_hint)}).eq('id',bikeId);
+     if(bikeTypeError)throw bikeTypeError;
+    }
+    const appointment={...appointmentRow,customer_id:customer.id,bike_id:bikeId};
     const {error}=await db.from('appointments').insert(appointment);if(error)throw error;
    await notify(db,'appointment',row);
   }else if(type==='message'){
